@@ -86,6 +86,7 @@ SRC = @VALGRINDTEST_SRC@ \
 	opentest.c \
 	nonblocktest.c \
 	reactivatetest.c \
+	rpcap_seraddr_test.c \
 	selpolltest.c \
 	threadsignaltest.c \
 	translatetest.c \
@@ -150,6 +151,10 @@ nonblocktest: $(srcdir)/nonblocktest.c ../libpcap.a
 reactivatetest: $(srcdir)/reactivatetest.c ../libpcap.a
 	$(CC) $(FULL_CFLAGS) -I. -L. -o $@ \
 	    $(srcdir)/reactivatetest.c ../libpcap.a $(LIBS)
+
+rpcap_seraddr_test: $(srcdir)/rpcap_seraddr_test.c ../libpcap.a
+	$(CC) $(FULL_CFLAGS) -I. -I$(srcdir)/.. -L. -o $@ \
+	    $(srcdir)/rpcap_seraddr_test.c ../libpcap.a $(LIBS)
 
 selpolltest: $(srcdir)/selpolltest.c ../libpcap.a
 	$(CC) $(FULL_CFLAGS) -I. -L. -o $@ $(srcdir)/selpolltest.c \

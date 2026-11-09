@@ -149,7 +149,7 @@ static int daemon_msg_stats_req(uint8_t ver, struct daemon_slpars *pars,
 static int daemon_msg_setsampling_req(uint8_t ver, struct daemon_slpars *pars,
     uint32_t plen, struct rpcap_sampling *samp_param);
 
-static void daemon_seraddr(struct sockaddr_storage *sockaddrin, struct rpcap_sockaddr *sockaddrout);
+static void daemon_seraddr(struct sockaddr_storage *sockaddrin, void *sockaddrout);
 #ifdef _WIN32
 static unsigned __stdcall daemon_thrdatamain(void *ptr);
 #else
@@ -1773,7 +1773,7 @@ daemon_msg_findallif_req(uint8_t ver, struct daemon_slpars *pars, uint32_t plen)
 		// send all addresses
 		for (address = d->addresses; address != NULL; address = address->next)
 		{
-			struct rpcap_sockaddr *sockaddr;
+			char *sockaddr;
 
 			/*
 			 * Send only IPv4 and IPv6 addresses over the wire.
@@ -1782,25 +1782,25 @@ daemon_msg_findallif_req(uint8_t ver, struct daemon_slpars *pars, uint32_t plen)
 			{
 			case AF_INET:
 			case AF_INET6:
-				sockaddr = (struct rpcap_sockaddr *) &sendbuf[sendbufidx];
+				sockaddr = &sendbuf[sendbufidx];
 				if (sock_bufferize(NULL, sizeof(struct rpcap_sockaddr), NULL,
 				    &sendbufidx, RPCAP_NETBUF_SIZE, SOCKBUF_CHECKONLY, errmsgbuf, PCAP_ERRBUF_SIZE) == -1)
 					goto error;
 				daemon_seraddr((struct sockaddr_storage *) address->addr, sockaddr);
 
-				sockaddr = (struct rpcap_sockaddr *) &sendbuf[sendbufidx];
+				sockaddr = &sendbuf[sendbufidx];
 				if (sock_bufferize(NULL, sizeof(struct rpcap_sockaddr), NULL,
 				    &sendbufidx, RPCAP_NETBUF_SIZE, SOCKBUF_CHECKONLY, errmsgbuf, PCAP_ERRBUF_SIZE) == -1)
 					goto error;
 				daemon_seraddr((struct sockaddr_storage *) address->netmask, sockaddr);
 
-				sockaddr = (struct rpcap_sockaddr *) &sendbuf[sendbufidx];
+				sockaddr = &sendbuf[sendbufidx];
 				if (sock_bufferize(NULL, sizeof(struct rpcap_sockaddr), NULL,
 				    &sendbufidx, RPCAP_NETBUF_SIZE, SOCKBUF_CHECKONLY, errmsgbuf, PCAP_ERRBUF_SIZE) == -1)
 					goto error;
 				daemon_seraddr((struct sockaddr_storage *) address->broadaddr, sockaddr);
 
-				sockaddr = (struct rpcap_sockaddr *) &sendbuf[sendbufidx];
+				sockaddr = &sendbuf[sendbufidx];
 				if (sock_bufferize(NULL, sizeof(struct rpcap_sockaddr), NULL,
 				    &sendbufidx, RPCAP_NETBUF_SIZE, SOCKBUF_CHECKONLY, errmsgbuf, PCAP_ERRBUF_SIZE) == -1)
 					goto error;
@@ -2835,7 +2835,7 @@ static void noop_handler(int sign _U_)
 	\warning This function supports only AF_INET and AF_INET6 address families.
 */
 static void
-daemon_seraddr(struct sockaddr_storage *sockaddrin, struct rpcap_sockaddr *sockaddrout)
+daemon_seraddr(struct sockaddr_storage *sockaddrin, void *sockaddrout)
 {
 	memset(sockaddrout, 0, sizeof(struct sockaddr_storage));
 

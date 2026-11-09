@@ -44,6 +44,17 @@ if(NOT WIN32)
   # On Windows, pcap_fileno() is deprecated and pcap_get_selectable_fd()
   # is not available
   add_test_executable(opendeadtest)
+  # rpcap_seraddr_test links rpcapd/daemon.c, which uses crypt().
+  if(UNIX)
+    check_function_exists(crypt SOCKSERADDR_TEST_HAVE_CRYPT)
+    if(NOT SOCKSERADDR_TEST_HAVE_CRYPT)
+      check_library_exists(crypt crypt "" SOCKSERADDR_TEST_HAVE_LIBCRYPT)
+      if(SOCKSERADDR_TEST_HAVE_LIBCRYPT)
+        set(RPCAP_SERADDR_TEST_LIBS crypt)
+      endif()
+    endif()
+  endif()
+  add_test_executable(rpcap_seraddr_test ${RPCAP_SERADDR_TEST_LIBS})
   add_test_executable(selpolltest)
   # Fails to link on Windows:
   # translatetest.obj : error LNK2019: unresolved external symbol

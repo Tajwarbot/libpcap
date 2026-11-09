@@ -368,6 +368,7 @@ EXTRA_DIST = \
 	testprogs/opendeadtest.c \
 	testprogs/opentest.c \
 	testprogs/reactivatetest.c \
+	testprogs/rpcap_seraddr_test.c \
 	testprogs/selpolltest.c \
 	testprogs/threadsignaltest.c \
 	testprogs/translatetest.c \
@@ -763,6 +764,7 @@ distclean: clean
 check: testprogs
 	LANG=C $(PERL) $(srcdir)/testprogs/TESTrun
 	testprogs/opendeadtest EN10MB
+	testprogs/rpcap_seraddr_test
 
 extags: $(TAGFILES)
 	ctags $(TAGFILES)
